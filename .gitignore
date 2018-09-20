@@ -105,3 +105,7 @@ venv.bak/
 
 # PhC mask stream files 
 *.str
+
+# data files
+*.txt
+*.dat
