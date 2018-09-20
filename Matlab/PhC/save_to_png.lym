@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description/>
+ <version/>
+ <category/>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>false</autorun>
+ <autorun-early>false</autorun-early>
+ <shortcut/>
+ <show-in-menu>false</show-in-menu>
+ <group-name/>
+ <menu-path/>
+ <interpreter>ruby</interpreter>
+ <dsl-interpreter-name/>
+ <text>module MyMacro
+ 
+  include RBA
+
+  app = RBA::Application.instance
+  mw = app.main_window
+
+  lv = mw.current_view
+    
+  cv  = lv.active_cellview
+  cv_index = cv.cell_index
+  ly  = cv.layout
+############################
+# change layer fill color, frame color and stipple
+  view = RBA::LayoutView::current
+
+  # The following loop traverses the tree/list
+  li = view.begin_layers
+  
+  while !li.at_end?
+  
+    # Identify the current properties and they match with the ones we look for
+    # change them
+    lp = li.current
+    if lp.source_layer == 46 &amp;&amp; lp.source_datatype == 0
+  
+      # To change the properties, create a copy, modify the attributes
+      # and replace the current properties 
+      new_lp = lp.dup
+      new_lp.dither_pattern = 0
+      new_lp.fill_color = -16725761
+      new_lp.frame_color = -16725761
+#      new_lp.frame_brightness = 0
+      
+      view.set_layer_properties(li, new_lp)
+  
+    end
+  
+    li.next
+  
+  end
+##########################################
+  
+  lv.save_image("Mask_SiN_hex_T200_L1028_D720_PD50_p5000.png", 5000, 5000)
+  
+
+end
+</text>
+</klayout-macro>
