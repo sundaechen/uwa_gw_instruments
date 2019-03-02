@@ -2,6 +2,7 @@ This program converts an SDF data file (e.g. data file from Agilent(HP) spectrum
 
 TO RUN:
 Copy files "*.exe" and "*.bat" into your data folder, and double click "vdosSDF.bat" to convert data.
+
 OR (if python is installed)
 Copy files "*.exe" and "vdosSDF.py" into your data folder, and double click "vdosSDF.py" to convert data.
 
