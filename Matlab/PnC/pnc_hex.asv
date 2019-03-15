@@ -1,0 +1,104 @@
+% function pnc_hex(x0,y0,r,a)
+addpath('C:\Users\Sundae\Documents\MATLAB\gdsii-toolbox-141\Basic\gdsio')
+addpath('C:\Users\Sundae\Documents\MATLAB\gdsii-toolbox-141\Basic')
+gs = gds_structure('BASIC');
+
+    a = 320;
+
+    structure_radius = 3000;
+    lattice_param = a/sqrt(3);
+    radius = 0.26*a;
+
+    nvertex = 10;
+
+    
+    x0 = 0;
+    y0 = 0;
+    
+    
+%     figure()
+    if isempty(findobj('Title', 'Mask')),
+        ax = gca;
+        title(ax, 'Mask');
+    end
+    axis('equal');  
+    hold on
+    
+    nholes = floor(structure_radius/lattice_param);
+    lattice_param_x = lattice_param;
+    lattice_param_y = lattice_param*sin(pi/3);
+
+    %% draw edge
+    for j = -2*nholes:2*nholes
+        for i = -(2*nholes+mod(j,2)/2):(2*nholes+mod(j,2)/2)
+%             % for round structure
+%             if i^2+(j*sin(pi/3))^2<=(structure_radius)^2/lattice_param^2 
+
+            % for square structure
+            if i^2 <=(structure_radius)^2/lattice_param^2 ...
+                    && (j*sin(pi/3))^2 <=(structure_radius)^2/lattice_param^2
+                
+                if i^2+(j*sin(pi/3))^2 >1 % remove center hole
+                
+                    if mod(ceil(i)-mod(j+1,2),3)~=2
+                        % Draw lattice in matlab for verification 
+                        rectangle('Position',...
+                            [lattice_param_x*i,lattice_param_y*j, radius, radius],...
+                            'Curvature',[1 1],'EdgeColor','k');
+                        
+                        % create one polygon
+                        c1 = polygon_circle(lattice_param_x*i,lattice_param_y*j,radius,nvertex);
+                        % create boundary element and add to the structure (on different layers)
+                        gs(end+1) = gds_element('boundary', 'xy', c1, 'layer',1);
+
+                    end
+                end
+            end
+        end
+    end
+
+    %% draw center part 
+    for j = -2*nholes:2*nholes
+        for i = -(2*nholes+mod(j,2)/2):(2*nholes+mod(j,2)/2)
+            if i^2+(j*sin(pi/3))^2 <= 1 % remove center hole
+
+                if mod(ceil(i)-mod(j+1,2),3)~=2
+                    % Draw lattice in matlab for verification 
+                    rectangle('Position',...
+                        [2*sin(2*pi/3)*lattice_param_y*j, 2*sin(2*pi/3)*lattice_param_x*i, radius, radius],...
+                        'Curvature',[1 1],'EdgeColor','r');
+                                            
+                    % create one polygon
+                    c1 = polygon_circle(2*sin(2*pi/3)*lattice_param_y*j, 2*sin(2*pi/3)*lattice_param_x*i, radius,nvertex);
+                    % create boundary element and add to the structure (on different layers)
+                    gs(end+1) = gds_element('boundary', 'xy', c1, 'layer',2);
+
+                end
+            end
+        end
+    end
+    
+    %% center removed part
+%     
+%         for j = -2*nholes:2*nholes
+%         for i = -(2*nholes+mod(j,2)/2):(2*nholes+mod(j,2)/2)
+%             if i^2+(j*sin(pi/3))^2<=(2*radius)^2/lattice_param^2 % remove center hole
+% 
+%                 if mod(ceil(i)-mod(j+1,2),3)~=2
+%                     % Draw lattice in matlab for verification 
+%                     rectangle('Position',...
+%                         [lattice_param_x*i, lattice_param_y*j,radius, radius],...
+%                         'Curvature',[1 1],'EdgeColor','b');
+%                 end
+%             end
+%         end
+%     end
+
+     hold off
+     
+% create a library to hold the structure
+glib = gds_library('TWO_BLOCKS', 'uunit',1e-6, 'dbunit',1e-9, gs);
+
+% finally write the library to a file
+write_gds_library(glib, '!basic.gds');
+

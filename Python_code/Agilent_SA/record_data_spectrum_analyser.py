@@ -4,11 +4,13 @@ import time
 import matplotlib.pyplot as pl
 
 ##### modify the traces you want to save 
-traces = [1,2]
+traces = [1,2,3,4]
 #####
 
 rm = visa.ResourceManager()
-sa = rm.open_resource('ASRL5::INSTR')
+##### Change the USB port number here e.g. 'ASRL5::INSTR'
+sa = rm.open_resource('ASRL3::INSTR')
+#####
 measurement_time = 10 # second
 
 
