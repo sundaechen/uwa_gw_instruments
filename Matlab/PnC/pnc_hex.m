@@ -1,5 +1,8 @@
-% function pnc_hex(x0,y0,r,a)
+% function pnc_hex(a)
 % For COMSOL, the default unit is um instead of nm for GDSII
+% This code generate a honeycomb pattern used in the paper:
+% https://www.nature.com/articles/nnano.2017.101
+% 
 
 clear all
 
@@ -8,9 +11,9 @@ addpath('C:\Users\Sundae\Documents\MATLAB\gdsii-toolbox-141\Basic')
 
 gs = gds_structure('BASIC');
 
-    a = 160; % need to devide 1000 for COMSOL
+    a = 310; % need to devide 1000 for COMSOL
 
-    structure_radius = 3000; % need to devide 1000 for COMSOL
+    structure_radius = ceil(19.5*a/2); % need to devide 1000 for COMSOL
     lattice_param = a/sqrt(3);
     radius = 0.26*a;
 
@@ -20,7 +23,7 @@ gs = gds_structure('BASIC');
     y0 = 0;
        
 %     figure()
-    if isempty(findobj('Title', 'Mask')),
+    if isempty(findobj('Title', 'Mask'))
         ax = gca;
         title(ax, 'Mask');
     end
@@ -103,5 +106,6 @@ gs = gds_structure('BASIC');
 glib = gds_library('pnc', 'uunit',1e-6, 'dbunit',1e-9, gs);
 
 % finally write the library to a file
-write_gds_library(glib, '!pnc_R_3000um_a_160um.gds');
+filename = sprintf('!pnc_R_%dum_a_%dum.gds',structure_radius,a);
+write_gds_library(glib, filename);
 
